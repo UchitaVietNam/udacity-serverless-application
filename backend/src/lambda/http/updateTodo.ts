@@ -3,25 +3,24 @@ import 'source-map-support/register'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import * as middy from 'middy'
 import { cors, httpErrorHandler } from 'middy/middlewares'
-
-import { updateTodo } from '../../businessLogic/todos'
-import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
-import { getUserId } from '../utils'
+import { TodoService } from '../../services/impl/TodoServiceImpl'
+import { TodoItem } from '../../models/TodoItem'
+import { ReqUpdateTodo } from '../../models/request/ReqTodoModels'
+import { getUserId } from '../../utils/authorizationUtil'
+import { createRes } from '../../utils/responseUtil'
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const todoId = event.pathParameters.todoId
-    const updatedTodo: UpdateTodoRequest = JSON.parse(event.body)
-    // TODO: Update a TODO item with the provided id using values in the "updatedTodo" object
-
-
-    return undefined
+    const req = JSON.parse(event.body)
+    req.userId = getUserId(event)
+    req.getUserId(event)
+    const res: TodoItem = await TodoService.updateTodo(req as ReqUpdateTodo)
+    return createRes(200, res)
+  }
 )
 
-handler
-  .use(httpErrorHandler())
-  .use(
-    cors({
-      credentials: true
-    })
-  )
+handler.use(httpErrorHandler()).use(
+  cors({
+    credentials: true
+  })
+)
