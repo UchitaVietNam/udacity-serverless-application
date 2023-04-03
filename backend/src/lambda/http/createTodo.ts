@@ -13,7 +13,7 @@ export const handler = middy(
     const req = JSON.parse(event.body)
     req.userId = getUserId(event)
     const res: TodoItem = await TodoService.createNewTodo(req as ReqCreateTodo)
-    return createRes(200, res)
+    return createRes(200, { item: res })
   }
 )
 
