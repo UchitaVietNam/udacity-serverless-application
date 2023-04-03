@@ -1,14 +1,14 @@
-# org: nguyentuanvu
-# app: serverless-todo-app
+org: uchitavietnam
+app: serverless-todo-app
 service: serverless-todo-app
 
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-plugin-tracing
-  - serverless-dynamodb-local
-  - serverless-offline
-  - serverless-plugin-optimize
+  # - serverless-dynamodb-local
+  # - serverless-offline
+  # - serverless-plugin-optimize
 
 provider:
   name: aws
@@ -26,7 +26,7 @@ provider:
     AUTHO_JWKS_UTL: https://uchita.jp.auth0.com/.well-known/jwks.json
     TODOS_TABLE: Todos-${self:provider.stage}
     TODOS_CREATED_AT_INDEX: CreatedAtIndex
-    TODO_S3_BUCKET_NAME: Todos-s3-bucket-${self:provider.stage}
+    TODO_S3_BUCKET_NAME: todos-s3-bucket-${self:provider.stage}
     TODO_SIGNED_URL_EXP: 300
 
   logs:
@@ -43,13 +43,11 @@ provider:
 
 custom:
   topicName: Todos-${self:provider.stage}
-
   serverless-offline:
     port: 3003
-
   dynamodb:
     start:
-      port: 8000
+      port: 8001
       inMemory: true
       migrate: true
     stages:
@@ -172,6 +170,8 @@ resources:
             AttributeType: S
           - AttributeName: todoId
             AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
         KeySchema:
           - AttributeName: userId
             KeyType: HASH
@@ -179,6 +179,15 @@ resources:
             KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.TODOS_TABLE}
+        LocalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.TODOS_CREATED_AT_INDEX}
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
 
     # RequestBodyValidator:
     #   Type: AWS::ApiGateway::RequestValidator

@@ -6,7 +6,7 @@ const ENVIROMENTS = () => {
   return {
     // LOCAL ENVS
     LOCAL_REGIONS: 'localhost',
-    LOCAL_ENDPOINT: 'http://localhost:8000',
+    LOCAL_ENDPOINT: 'http://localhost:8001',
     // AUTH ENVS
     AUTHO_JWKS_UTL: process.env.AUTHO_JWKS_UTL,
     // TODO ENVS

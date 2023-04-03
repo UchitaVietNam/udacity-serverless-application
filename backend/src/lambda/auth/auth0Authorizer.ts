@@ -33,7 +33,7 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
     const jwt: Jwt = decode(token, { complete: true }) as Jwt
     const key = await getSigningKey(jwt.header.kid)
 
-    return verify(token, key.publicKey, { algorithms: ['RS256'] }) as JwtPayload
+    return verify(token, key.publicKey, { algorithms: ['HS256'] }) as JwtPayload
   } catch (err) {
     LOGGER.error(err)
   }
