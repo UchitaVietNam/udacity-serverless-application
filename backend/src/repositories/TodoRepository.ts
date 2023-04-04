@@ -123,9 +123,9 @@ export class TodoRepository {
         todoId: updateTodo.todoId,
         userId: updateTodo.userId
       },
-      ExpressionAttributeNames: { nameAttr: 'name' },
+      ExpressionAttributeNames: { '#N': 'name' },
       UpdateExpression:
-        'set nameAttr = :name, dueDate = :dueDate, done = :done',
+        'set #N = :name, dueDate = :dueDate, done = :done',
       ExpressionAttributeValues: {
         ':name': updateTodo.name,
         ':dueDate': updateTodo.dueDate,

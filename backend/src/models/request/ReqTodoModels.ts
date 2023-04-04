@@ -13,5 +13,4 @@ export interface ReqUpdateTodo {
   name: string
   dueDate: string
   done: boolean
-  attachmentUrl?: string
 }

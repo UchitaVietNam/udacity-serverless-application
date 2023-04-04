@@ -20,5 +20,9 @@ export const LOG_NAME = {
   AUTH0_AUTH: 'Auth0Authorizer',
   TODO_REPO: 'TodoRepositories',
   TODO_SERVICE: 'TodoService',
-  GENERATE_UPLOAD_URL: 'generateUploadUrl'
+  GENERATE_UPLOAD_URL: 'GenerateUploadUrl',
+  CREATE_TODO: 'CreateTodo',
+  DELETE_TODO: 'DeleteTodo',
+  GET_TODOS: 'GetTodos',
+  UPDATE_TODO: 'UpdateTodo'
 }

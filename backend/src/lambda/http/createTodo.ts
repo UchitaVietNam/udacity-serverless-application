@@ -7,9 +7,13 @@ import { TodoItem } from '../../models/TodoItem'
 import { TodoService } from '../../services/impl/TodoServiceImpl'
 import { ReqCreateTodo } from '../../models/request/ReqTodoModels'
 import { createRes } from '../../utils/responseUtil'
+import { LOG_NAME, createLogger } from '../../utils/loggerUtil'
+
+const LOGGER = createLogger(LOG_NAME.CREATE_TODO)
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    LOGGER.info(`Start create a Todo item`)
     const req = JSON.parse(event.body)
     req.userId = getUserId(event)
     const res: TodoItem = await TodoService.createNewTodo(req as ReqCreateTodo)
