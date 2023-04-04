@@ -4,5 +4,10 @@ export interface TodoUpdate {
   name: string
   dueDate: string
   done: boolean
-  attachmentUrl?: string
+}
+
+export interface TodoUpdateImage {
+  userId: string
+  todoId: string
+  attachmentUrl: string
 }

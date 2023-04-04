@@ -10,7 +10,7 @@ import { TodoRepository } from '../../repositories/TodoRepository'
 import ENVIROMENTS from '../../utils/enviromentsUtil'
 import { LOG_NAME, createLogger } from '../../utils/loggerUtil'
 
-const uuid = require('uuid');
+const uuid = require('uuid')
 const ENVS = ENVIROMENTS()
 const AWSXRay = require('aws-xray-sdk')
 const XAWS = AWSXRay.captureAWS(AWS)
@@ -86,7 +86,6 @@ class TodoServiceImpl implements ITodoService {
       userId: req.userId,
       name: req.name,
       dueDate: req.dueDate,
-      attachmentUrl: req.attachmentUrl || '',
       done: req.done
     }
     return await this.todoRepository.update(toUpdate)
@@ -104,6 +103,21 @@ class TodoServiceImpl implements ITodoService {
     await this.todoRepository.delete(userId, todoId)
   }
 
+  async updateAttachment(
+    userId: string,
+    todoId: string,
+    attachmentUrl: string
+  ): Promise<TodoItem> {
+    LOGGER.info(
+      `Update attachment url of user ${userId} - todo ${todoId} to url ${attachmentUrl}`
+    )
+    return await this.todoRepository.updateAttachImage({
+      userId: userId,
+      todoId: todoId,
+      attachmentUrl: attachmentUrl
+    })
+  }
+
   /**
    * Get a signed url of todo attachment image
    * @param todoId Todo id
@@ -116,6 +130,14 @@ class TodoServiceImpl implements ITodoService {
       Key: todoId,
       Expires: parseInt(ENVS.TODO_SIGNED_URL_EXP)
     })
+  }
+
+  /**
+   * Create attachment url
+   * @param todoid Todo id
+   */
+  createAttachmentUrl(todoId: string): string {
+    return `https://${ENVS.TODO_S3_BUCKET_NAME}.s3.amazonaws.com/${todoId}`
   }
 }
 

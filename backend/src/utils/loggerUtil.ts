@@ -19,5 +19,6 @@ export const LOG_NAME = {
   DOC_CLIENTS: 'DocumentClient',
   AUTH0_AUTH: 'Auth0Authorizer',
   TODO_REPO: 'TodoRepositories',
-  TODO_SERVICE: 'TodoService'
+  TODO_SERVICE: 'TodoService',
+  GENERATE_UPLOAD_URL: 'generateUploadUrl'
 }

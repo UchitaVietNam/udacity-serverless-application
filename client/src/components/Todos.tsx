@@ -31,17 +31,7 @@ interface TodosState {
 
 export class Todos extends React.PureComponent<TodosProps, TodosState> {
   state: TodosState = {
-    todos: [
-      {
-        todoId: '000d3419-8709-4f44-aa96-fd1fd1c3ac42',
-        // userId: 'google-oauth2|111153177954183129824',
-        name: 'Water flowers',
-        dueDate: '2019-06-11',
-        attachmentUrl: '',
-        createdAt: '2023-04-03T15:47:41.237Z',
-        done: false
-      }
-    ],
+    todos: [],
     newTodoName: '',
     loadingTodos: true
   }

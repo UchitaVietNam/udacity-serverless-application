@@ -4,7 +4,7 @@ import { createDocumentClient } from './DocumentClient'
 import { AWSError } from 'aws-sdk'
 import { PromiseResult } from 'aws-sdk/lib/request'
 import { LOG_NAME, createLogger } from '../utils/loggerUtil'
-import { TodoUpdate } from '../models/TodoUpdate'
+import { TodoUpdate, TodoUpdateImage } from '../models/TodoUpdate'
 import ENVIROMENTS from '../utils/enviromentsUtil'
 
 const LOGGER = createLogger(LOG_NAME.TODO_REPO)
@@ -33,18 +33,6 @@ export class TodoRepository {
   }
 
   /**
-   * Execute a insert query
-   * @param query Query
-   * @returns Result
-   */
-  private async createsItem(
-    query: DocumentClient.PutItemInput
-  ): Promise<PromiseResult<DocumentClient.PutItemOutput, AWSError>> {
-    LOGGER.info(`Start Execute A Insert Query '${query}'`)
-    return await this.docClient.put(query).promise()
-  }
-
-  /**
    * Execute a update query
    * @param query Query
    * @returns Result
@@ -54,6 +42,18 @@ export class TodoRepository {
   ): Promise<PromiseResult<DocumentClient.UpdateItemOutput, AWSError>> {
     LOGGER.info(`Start Execute A Update Query '${query}'`)
     return await this.docClient.update(query).promise()
+  }
+
+  /**
+   * Execute a insert query
+   * @param query Query
+   * @returns Result
+   */
+  private async createsItem(
+    query: DocumentClient.PutItemInput
+  ): Promise<PromiseResult<DocumentClient.PutItemOutput, AWSError>> {
+    LOGGER.info(`Start Execute A Insert Query '${query}'`)
+    return await this.docClient.put(query).promise()
   }
 
   /**
@@ -105,38 +105,63 @@ export class TodoRepository {
       TableName: this.todosTableName,
       Item: todo
     }
-    await await this.createsItem(query)
+    await this.createsItem(query)
     LOGGER.info(`Todo Item Inserted: ${JSON.stringify(todo)}`)
     return todo
   }
 
   /**
    * Update a todo
-   * @param updatedTodo Update todo
+   * @param updateTodo Update todo
    * @returns Updated todo
    */
-  async update(updatedTodo: TodoUpdate): Promise<TodoItem> {
-    LOGGER.info(`Start Update Todo Item: ${JSON.stringify(updatedTodo)}`)
+  async update(updateTodo: TodoUpdate): Promise<TodoItem> {
+    LOGGER.info(`Start Update Todo Item: ${JSON.stringify(updateTodo)}`)
     const query: DocumentClient.UpdateItemInput = {
       TableName: this.todosTableName,
       Key: {
-        todoId: updatedTodo.todoId,
-        userId: updatedTodo.userId
+        todoId: updateTodo.todoId,
+        userId: updateTodo.userId
       },
       ExpressionAttributeNames: { nameAttr: 'name' },
       UpdateExpression:
-        'set attachmentUrl = :attachmentUrl, nameAttr = :name, dueDate = :dueDate, done = :done',
+        'set nameAttr = :name, dueDate = :dueDate, done = :done',
       ExpressionAttributeValues: {
-        ':attachmentUrl': updatedTodo.attachmentUrl,
-        ':name': updatedTodo.name,
-        ':dueDate': updatedTodo.dueDate,
-        ':done': updatedTodo.done
+        ':name': updateTodo.name,
+        ':dueDate': updateTodo.dueDate,
+        ':done': updateTodo.done
       },
       ReturnValues: 'UPDATED_NEW'
     }
     await this.editsItem(query)
-    LOGGER.info(`Todo Item Updated: ${JSON.stringify(updatedTodo)}`)
-    return updatedTodo as TodoItem
+    LOGGER.info(`Todo Item Updated: ${JSON.stringify(updateTodo)}`)
+    return updateTodo as TodoItem
+  }
+
+  /**
+   * Update attachment image url
+   * @param updateTodo Update info
+   * @returns Updated info
+   */
+  async updateAttachImage(updateTodo: TodoUpdateImage): Promise<TodoItem> {
+    LOGGER.info(
+      `Start Update Todo attachment image ${JSON.stringify(updateTodo)}'`
+    )
+    const query: DocumentClient.UpdateItemInput = {
+      TableName: this.todosTableName,
+      Key: {
+        todoId: updateTodo.todoId,
+        userId: updateTodo.userId
+      },
+      UpdateExpression: 'set attachmentUrl = :attachmentUrl',
+      ExpressionAttributeValues: {
+        ':attachmentUrl': updateTodo.attachmentUrl
+      },
+      ReturnValues: 'UPDATED_NEW'
+    }
+    await this.editsItem(query)
+    LOGGER.info(`Todo attachment image Updated: ${JSON.stringify(updateTodo)}`)
+    return updateTodo as TodoItem
   }
 
   /**
@@ -144,7 +169,7 @@ export class TodoRepository {
    * @param userId User id
    * @param todoId Todo id
    */
-  async delete(userId: string, todoId: string) {
+  async delete(userId: string, todoId: string): Promise<void> {
     LOGGER.info(
       `Start Delete Todo Item By ID '${todoId}' And User ID '${userId}'`
     )
